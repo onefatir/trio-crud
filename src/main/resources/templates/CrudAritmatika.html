@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kalkulator Aritmatika - Vertikal Layout</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="mx-auto max-w-5xl px-4 py-8">
+        <!-- Judul Header -->
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold text-slate-900">Sistem CRUD Kalkulator Aritmatika</h2>
+            <p class="mt-1 text-slate-500">Form Operasi dan History Perhitungan dalam Satu Halaman Secara Vertikal</p>
+            <hr class="mt-4 border-slate-300">
+        </div>
+
+        <!-- BAGIAN ATAS: Form Operasi Aritmatika -->
+        <div class="mb-10 overflow-hidden rounded-lg bg-white shadow-sm">
+            <div class="px-5 py-3 text-white"
+                 th:classappend="${aritmatika.id != null} ? 'bg-amber-500' : 'bg-blue-600'">
+                <h5 class="font-semibold"
+                    th:text="${aritmatika.id != null} ? 'Edit Perhitungan #' + ${aritmatika.id} : 'Form Operasi Aritmatika'">
+                    Form Operasi Aritmatika
+                </h5>
+            </div>
+            <div class="p-5">
+                <form action="#" th:action="@{/crud-aritmatika/simpan}" th:object="${aritmatika}" method="post">
+                    <input type="hidden" th:if="*{id != null}" th:field="*{id}" />
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-end">
+                        <div>
+                            <label for="bilangan1" class="mb-1 block text-sm font-bold">Bilangan 1</label>
+                            <input type="number" step="any" th:field="*{bilangan1}" required
+                                   class="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                   placeholder="Contoh: 12" />
+                        </div>
+
+                        <div>
+                            <label for="operator" class="mb-1 block text-sm font-bold">Operator</label>
+                            <select th:field="*{operator}"
+                                    class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 md:w-28 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                <option value="+">+ Tambah</option>
+                                <option value="-">− Kurang</option>
+                                <option value="*">× Kali</option>
+                                <option value="/">÷ Bagi</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="bilangan2" class="mb-1 block text-sm font-bold">Bilangan 2</label>
+                            <input type="number" step="any" th:field="*{bilangan2}" required
+                                   class="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                   placeholder="Contoh: 4" />
+                        </div>
+
+                        <div class="hidden pb-2 text-center text-2xl font-bold text-slate-400 md:block">=</div>
+
+                        <div>
+                            <label for="result" class="mb-1 block text-sm font-bold">Result</label>
+                            <input type="text" id="result" readonly tabindex="-1"
+                                   th:value="${hasil != null} ? ${hasil} : ''"
+                                   class="w-full cursor-default rounded-md border border-slate-200 bg-slate-100 px-3 py-2 font-mono font-bold text-slate-900"
+                                   placeholder="—" />
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-2">
+                        <a th:if="*{id != null}" th:href="@{/crud-aritmatika}"
+                           class="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-50">Batal</a>
+                        <button type="submit"
+                                class="rounded-md bg-green-600 px-5 py-2 font-bold text-white hover:bg-green-700"
+                                th:text="*{id != null} ? 'Update & Calculate' : 'Calculate Result'">
+                            Calculate Result
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- BAGIAN BAWAH: Tabel History Perhitungan -->
+        <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+            <div class="bg-slate-800 px-5 py-3 text-white">
+                <h5 class="font-semibold">History Perhitungan</h5>
+            </div>
+            <div class="overflow-x-auto p-5">
+                <table class="w-full border-collapse text-sm">
+                    <thead class="bg-blue-100 text-center">
+                        <tr>
+                            <th class="border border-slate-200 px-3 py-2">ID</th>
+                            <th class="border border-slate-200 px-3 py-2">Bilangan 1</th>
+                            <th class="border border-slate-200 px-3 py-2">Operator</th>
+                            <th class="border border-slate-200 px-3 py-2">Bilangan 2</th>
+                            <th class="border border-slate-200 px-3 py-2">Result</th>
+                            <th class="border border-slate-200 px-3 py-2">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="arit : ${listAritmatika}" class="odd:bg-white even:bg-slate-50 hover:bg-blue-50"
+                            th:classappend="${arit.id == aritmatika.id} ? '!bg-amber-50'">
+                            <td class="border border-slate-200 px-3 py-2 text-center" th:text="${arit.id}">1</td>
+                            <td class="border border-slate-200 px-3 py-2 text-right font-mono" th:text="${arit.bilangan1.toPlainString()}">12</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-mono" th:text="${arit.operator}">+</td>
+                            <td class="border border-slate-200 px-3 py-2 text-right font-mono" th:text="${arit.bilangan2.toPlainString()}">4</td>
+                            <td class="border border-slate-200 px-3 py-2 text-right font-mono font-bold" th:text="${arit.result.toPlainString()}">16</td>
+                            <td class="border border-slate-200 px-3 py-2">
+                                <div class="flex justify-center gap-2">
+                                    <a th:href="@{/crud-aritmatika/edit/{id}(id=${arit.id})}"
+                                       class="rounded bg-amber-500 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-600">Edit</a>
+                                    <form th:action="@{/crud-aritmatika/hapus/{id}(id=${arit.id})}" method="post"
+                                          onsubmit="return confirm('Hapus data ini?')">
+                                        <button type="submit"
+                                                class="rounded bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(listAritmatika)}">
+                            <td colspan="6" class="border border-slate-200 py-4 text-center text-slate-400">Belum ada history perhitungan.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data toast dari server (flash attribute), dibaca script Sonner di bawah -->
+    <div id="toast-data" hidden
+         th:if="${toastMessage != null}"
+         th:data-type="${toastType}"
+         th:data-message="${toastMessage}"></div>
+    <div id="toaster"></div>
+
+    <!-- Sonner (React) via esm.sh untuk toast -->
+    <script type="module">
+        import { createElement, Fragment, useEffect } from "https://esm.sh/react@19.1.0";
+        import { createRoot } from "https://esm.sh/react-dom@19.1.0/client?deps=react@19.1.0";
+        import { Toaster, toast } from "https://esm.sh/sonner@2.0.7?deps=react@19.1.0,react-dom@19.1.0";
+
+        const data = document.getElementById("toast-data");
+
+        // Dirender setelah <Toaster>, jadi efeknya jalan setelah Toaster siap menerima toast
+        function FlashToast() {
+            useEffect(() => {
+                if (!data) return;
+                const show = toast[data.dataset.type] ?? toast;
+                show(data.dataset.message);
+            }, []);
+            return null;
+        }
+
+        createRoot(document.getElementById("toaster")).render(
+            createElement(Fragment, null,
+                createElement(Toaster, { position: "top-right", richColors: true, closeButton: true }),
+                createElement(FlashToast)
+            )
+        );
+    </script>
+</body>
+</html>
